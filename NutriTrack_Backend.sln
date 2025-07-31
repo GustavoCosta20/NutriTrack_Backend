@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriTrack_Api", "NutriTrack_Api\NutriTrack_Api.csproj", "{4F43CE7F-28A4-4FD6-ACDD-30B03EA49791}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriTrack_Tests", "NutriTrack.Tests\NutriTrack_Tests.csproj", "{77E989AF-E590-4D47-A721-A15EF7284252}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriTrack_Services", "NutriTrack.Services\NutriTrack_Services.csproj", "{E2AB63D5-3BFF-4B2D-8BCF-7FABB238BF41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriTrack_Domains", "NutriTrack.Domains\NutriTrack_Domains.csproj", "{59C2ACB0-65C8-4586-B9F0-2B2209181552}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriTrack_Connection", "NutriTrack_Connection\NutriTrack_Connection.csproj", "{9C7BBE86-7E77-4ACD-94B5-3C8D8A084242}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F43CE7F-28A4-4FD6-ACDD-30B03EA49791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F43CE7F-28A4-4FD6-ACDD-30B03EA49791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F43CE7F-28A4-4FD6-ACDD-30B03EA49791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F43CE7F-28A4-4FD6-ACDD-30B03EA49791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77E989AF-E590-4D47-A721-A15EF7284252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77E989AF-E590-4D47-A721-A15EF7284252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77E989AF-E590-4D47-A721-A15EF7284252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77E989AF-E590-4D47-A721-A15EF7284252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2AB63D5-3BFF-4B2D-8BCF-7FABB238BF41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AB63D5-3BFF-4B2D-8BCF-7FABB238BF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2AB63D5-3BFF-4B2D-8BCF-7FABB238BF41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2AB63D5-3BFF-4B2D-8BCF-7FABB238BF41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C2ACB0-65C8-4586-B9F0-2B2209181552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C2ACB0-65C8-4586-B9F0-2B2209181552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C2ACB0-65C8-4586-B9F0-2B2209181552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C2ACB0-65C8-4586-B9F0-2B2209181552}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C7BBE86-7E77-4ACD-94B5-3C8D8A084242}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C7BBE86-7E77-4ACD-94B5-3C8D8A084242}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C7BBE86-7E77-4ACD-94B5-3C8D8A084242}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C7BBE86-7E77-4ACD-94B5-3C8D8A084242}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{77E989AF-E590-4D47-A721-A15EF7284252} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6034EC2-ABB5-4BD4-9B34-48D6824370E7}
+	EndGlobalSection
+EndGlobal
