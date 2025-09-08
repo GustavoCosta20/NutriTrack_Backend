@@ -27,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\NutriTrack.Services\NutriTrack_Services.csproj" />
     <ProjectReference Include="..\NutriTrack_Connection\NutriTrack_Connection.csproj" />
   </ItemGroup>

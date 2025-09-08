@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BCrypt.Net;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NutriTrack_Domains.Dtos;
 using NutriTrack_Domains.Interfaces.Repository;
@@ -23,7 +24,28 @@ namespace NutriTrack_Services.UserServices
 
         public async Task RegisterUser(RegisterUserDto info)
         {
-            //await _usersRepository.GetByIdAsync(id);
+            try
+            {
+                var userData = new Users
+                {
+                    AlturaEmCm = info.AlturaEmCm,
+                    CriadoEm = DateTime.UtcNow,
+                    DataNascimento = info.DataNascimento,
+                    Email = info.Email,
+                    Genero = info.Genero,
+                    Id = Guid.NewGuid(),
+                    NivelDeAtividade = info.NivelAtividade,
+                    Objetivo = info.Objetivo,
+                    PesoEmKg = info.PesoEmKg,
+                    Senha = BCrypt.Net.BCrypt.HashPassword(info.Senha)
+                };
+
+                await _usersRepository.AddAsync(userData);
+            }
+            catch (Exception E)
+            {
+                throw new Exception(E.Message);
+            }
         }
 
         public async Task<string> LoginUser(UserDataLoginDto info)
