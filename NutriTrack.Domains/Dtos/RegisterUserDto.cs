@@ -4,8 +4,7 @@ namespace NutriTrack_Domains.Dtos
 {
     public class RegisterUserDto
     {
-        public string Nome { get; set; }
-        public string Sobrenome { get; set; }
+        public string NomeCompleto { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
         public DateOnly DataNascimento { get; set; }

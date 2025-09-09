@@ -15,11 +15,10 @@ namespace NutriTrack_Domains.Tables.UsersTb
         [Key]
         public Guid Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
+        public string NomeCompleto { get; set; }
+
         public string Email { get; set; }
 
-        [Required]
         public string Senha { get; set; }
 
         public DateOnly DataNascimento { get; set; }
@@ -30,7 +29,7 @@ namespace NutriTrack_Domains.Tables.UsersTb
 
         public DateTime CriadoEm { get; set; }
 
-        public DateTime AtualizadoEm { get; set; }
+        public DateTime? AtualizadoEm { get; set; }
 
         public EnumGenero Genero { get; set; }
 

@@ -28,6 +28,7 @@ namespace NutriTrack_Services.UserServices
             {
                 var userData = new Users
                 {
+                    NomeCompleto = info.NomeCompleto,
                     AlturaEmCm = info.AlturaEmCm,
                     CriadoEm = DateTime.UtcNow,
                     DataNascimento = info.DataNascimento,

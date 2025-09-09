@@ -21,8 +21,7 @@ namespace NutriTrack_Tests.TDD
 
             var dto = new RegisterUserDto
             {
-                Nome = "Gustavo",
-                Sobrenome = "Costa",
+                NomeCompleto = "Gustavo Costa",
                 Email = "gusta@email.com",
                 DataNascimento = dataNascimento,
                 Genero = EnumGenero.Masculino,

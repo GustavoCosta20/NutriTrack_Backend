@@ -28,5 +28,19 @@ namespace NutriTrack_Api.Controllers
                 throw new Exception(E.Message);
             }
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginUser(UserDataLoginDto info)
+        {
+            try
+            {
+                var token = await _registerAndLoginServ.LoginUser(info);
+                return Ok(token);
+            }
+            catch (Exception E)
+            {
+                throw new Exception(E.Message);
+            }
+        }
     }
 }
