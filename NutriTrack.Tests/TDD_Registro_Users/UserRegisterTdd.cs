@@ -4,6 +4,7 @@ using Moq;
 using Nest;
 using NutriTrack_Domains.Dtos;
 using NutriTrack_Domains.Enums;
+using NutriTrack_Domains.Interfaces.NutritionCalculator;
 using NutriTrack_Domains.Interfaces.Repository;
 using NutriTrack_Domains.Tables.UsersTb;
 using NutriTrack_Services.UserServices;
@@ -18,6 +19,7 @@ namespace NutriTrack_Tests.TDD
             var dataNascimento = new DateOnly(1995, 10, 20);
             var mockRepo = new Mock<NutriTrack_Domains.Interfaces.Repository.IRepository<Users>>();
             var mockJWT = new Mock<IConfiguration>();
+            var mockCalc = new Mock<INutritionCalculatorService>();
 
             var dto = new RegisterUserDto
             {
@@ -34,7 +36,7 @@ namespace NutriTrack_Tests.TDD
 
             mockRepo.Setup(r => r.AddAsync(It.IsAny<Users>())).Returns(Task.CompletedTask);
 
-            var service = new RegisterAndLoginServ(mockRepo.Object, mockJWT.Object);
+            var service = new RegisterAndLoginServ(mockRepo.Object, mockJWT.Object, mockCalc.Object);
 
             var exception = await Record.ExceptionAsync(() => service.RegisterUser(dto));
 

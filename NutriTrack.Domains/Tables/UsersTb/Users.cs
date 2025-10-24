@@ -37,5 +37,13 @@ namespace NutriTrack_Domains.Tables.UsersTb
 
         public EnumObjetivo Objetivo { get; set; }
 
+        public int MetaCalorias { get; set; }
+
+        public int MetaProteinas { get; set; }
+
+        public int MetaCarboidratos { get; set; }
+
+        public int MetaGorduras { get; set; }
+
     }
 }

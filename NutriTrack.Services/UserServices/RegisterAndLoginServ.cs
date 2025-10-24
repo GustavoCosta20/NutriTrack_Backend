@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NutriTrack_Domains.Dtos;
+using NutriTrack_Domains.Interfaces.NutritionCalculator;
 using NutriTrack_Domains.Interfaces.Repository;
 using NutriTrack_Domains.Interfaces.UserInterfaces;
 using NutriTrack_Domains.Tables.UsersTb;
@@ -15,11 +16,13 @@ namespace NutriTrack_Services.UserServices
     {
         private readonly IRepository<Users> _usersRepository;
         private readonly IConfiguration _configuration;
+        private readonly INutritionCalculatorService _nutritionCalculator;
 
-        public RegisterAndLoginServ(IRepository<Users> usersRepository, IConfiguration configuration)
+        public RegisterAndLoginServ(IRepository<Users> usersRepository, IConfiguration configuration, INutritionCalculatorService nutritionCalculator)
         {
             _usersRepository = usersRepository;
             _configuration = configuration;
+            _nutritionCalculator = nutritionCalculator;
         }
 
         public async Task RegisterUser(RegisterUserDto info)
@@ -40,6 +43,8 @@ namespace NutriTrack_Services.UserServices
                     PesoEmKg = info.PesoEmKg,
                     Senha = BCrypt.Net.BCrypt.HashPassword(info.Senha)
                 };
+
+                _nutritionCalculator.CalcularPlanoNutricional(userData);
 
                 await _usersRepository.AddAsync(userData);
             }

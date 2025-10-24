@@ -1,13 +1,14 @@
-﻿using Moq;
-using Xunit;
+﻿using Microsoft.Extensions.Configuration;
+using Moq;
 using NutriTrack_Domains.Dtos;
+using NutriTrack_Domains.Interfaces.NutritionCalculator;
 using NutriTrack_Domains.Interfaces.Repository;
 using NutriTrack_Domains.Tables.UsersTb;
 using NutriTrack_Services.UserServices;
 using System;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
-using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace NutriTrack_Tests.TDD_Login_Users
 {
@@ -21,12 +22,13 @@ namespace NutriTrack_Tests.TDD_Login_Users
             var loginDto = new UserDataLoginDto { Email = "naoexiste@email.com", Senha = "123" };
             var mockRepo = new Mock<IRepository<Users>>();
             var mockJWT = new Mock<IConfiguration>();
+            var mockCalc = new Mock<INutritionCalculatorService>();
 
             // Configura o mock para retornar NULO, simulando que o usuário não foi encontrado.
             mockRepo.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Users, bool>>>()))
                     .ReturnsAsync((Users)null);
 
-            var service = new RegisterAndLoginServ(mockRepo.Object, mockJWT.Object);
+            var service = new RegisterAndLoginServ(mockRepo.Object, mockJWT.Object, mockCalc.Object);
 
             // --- ACT ---
             // Usamos Record.ExceptionAsync para capturar a exceção que o método deve lançar.
@@ -47,6 +49,7 @@ namespace NutriTrack_Tests.TDD_Login_Users
             var senhaIncorreta = "senhaErrada";
             var senhaHashCorreta = BCrypt.Net.BCrypt.HashPassword(senhaCorreta);
             var mockJWT = new Mock<IConfiguration>();
+            var mockCalc = new Mock<INutritionCalculatorService>();
 
             var loginDto = new UserDataLoginDto { Email = "usuario@existente.com", Senha = senhaIncorreta };
 
@@ -59,7 +62,7 @@ namespace NutriTrack_Tests.TDD_Login_Users
             mockRepo.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Users, bool>>>()))
                     .ReturnsAsync(usuarioDoBanco);
 
-            var service = new RegisterAndLoginServ(mockRepo.Object, mockJWT.Object);
+            var service = new RegisterAndLoginServ(mockRepo.Object, mockJWT.Object, mockCalc.Object);
 
             // --- ACT ---
             var exception = await Record.ExceptionAsync(() => service.LoginUser(loginDto));
@@ -78,6 +81,7 @@ namespace NutriTrack_Tests.TDD_Login_Users
             var senhaHashCorreta = BCrypt.Net.BCrypt.HashPassword(senhaCorreta);
             var loginDto = new UserDataLoginDto { Email = "usuario@existente.com", Senha = senhaCorreta };
             var usuarioDoBanco = new Users { Id = Guid.NewGuid(), Email = loginDto.Email, Senha = senhaHashCorreta };
+            var mockCalc = new Mock<INutritionCalculatorService>();
 
             // 1. Criar a configuração em memória
             var inMemorySettings = new Dictionary<string, string> {
@@ -94,7 +98,7 @@ namespace NutriTrack_Tests.TDD_Login_Users
                     .ReturnsAsync(usuarioDoBanco);
 
             // 3. Criar a instância do serviço passando a configuração real em memória
-            var service = new RegisterAndLoginServ(mockRepo.Object, configuration); // <-- Passe a configuração aqui
+            var service = new RegisterAndLoginServ(mockRepo.Object, configuration, mockCalc.Object); // <-- Passe a configuração aqui
 
             // --- ACT ---
             string token = null;
