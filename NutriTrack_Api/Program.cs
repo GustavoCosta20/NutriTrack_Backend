@@ -1,82 +1,112 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer; 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore; 
+using Microsoft.IdentityModel.Tokens; 
 using Microsoft.OpenApi.Models;
 using NutriTrack_Connection;
+using NutriTrack_Connection.Repositories;
+using NutriTrack_Domains.Interfaces.NutritionCalculator;
+using NutriTrack_Domains.Interfaces.Repository;
+using NutriTrack_Domains.Interfaces.UserInterfaces;
+using NutriTrack_Services.CalculatorService;
+using NutriTrack_Services.UserServices;
+using System.Text; 
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration; 
 
-builder.Configuration
-       .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-       .AddEnvironmentVariables();
+// 1. Configuração do DbContext com a Connection String
+builder.Services.AddDbContext<Context>(options =>
+    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDbContext<Context>();
+builder.Services.AddScoped<INutritionCalculatorService, NutritionCalculatorService>();
 
-var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
-var configuration = builder.Configuration;
-var environment = builder.Environment;
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IRegisterAndLoginServ, RegisterAndLoginServ>();
 
-// CORS
-builder.Services.AddCors(options =>
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddOptions();
+builder.Services.AddControllers();
+
+builder.Services.AddAuthentication(options =>
 {
-    options.AddPolicy(name: myAllowSpecificOrigins,
-                      builder =>
-                      {
-                          builder.AllowAnyOrigin()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
-                      });
-});
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = configuration["JwtSettings:Issuer"],
+        ValidAudience = configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]))
+    };
+}); 
 
-// Get Environment Name
-var envName = configuration.GetSection("EnvironmentName").Value;
-var versionName = configuration.GetSection("VersionName").Value;
-
-// Swagger
+// 4. Configuração do Swagger para usar o Token JWT
 builder.Services.AddSwaggerGen(swagger =>
 {
-    swagger.CustomSchemaIds(type => type.ToString());
-    swagger.SwaggerDoc("v1", new OpenApiInfo
+    swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "NutriTrack.Api", Version = "v1" });
+    // Adiciona o botão "Authorize" na UI do Swagger
+    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Version = versionName,
-        Title = $"NutriTrack.Api - {envName}"
+        In = ParameterLocation.Header,
+        Description = "Por favor, insira 'Bearer' seguido de um espaço e o seu token JWT.",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
     });
 });
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddCors(options =>
 {
-    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-
-}).ConfigureApiBehaviorOptions(options =>
-{
-    options.SuppressModelStateInvalidFilter = true;
+    options.AddPolicy(name: "_myAllowSpecificOrigins",
+                      builder =>
+                      {
+                          builder.AllowAnyOrigin()
+                                 .AllowAnyHeader()
+                                 .AllowAnyMethod();
+                      });
 });
-//}).AddNewtonsoftJson(options =>
-//{
-//    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
-//    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-//});
-
-//builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
-//builder.Services.AddScoped<IUserSettingsAppService, UserSettingsAppService>();
-
-
-builder.Services.AddOptions();
 
 var app = builder.Build();
 
+// CONFIGURAÇÃO DO PIPELINE HTTP 
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "NutriTrack.Api"));
-    app.UseHsts();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors(myAllowSpecificOrigins);
+app.UseCors("_myAllowSpecificOrigins");
 
-app.UseAuthentication();
-app.UseAuthorization();
+// Middlewares de Autenticação e Autorização
+app.UseAuthentication(); 
+app.UseAuthorization(); 
 
-app.UseEndpoints(endpoints => endpoints.MapControllers());
+app.MapControllers(); 
 
 app.Run();

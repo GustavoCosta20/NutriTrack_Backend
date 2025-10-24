@@ -18,4 +18,8 @@
     <PackageReference Include="Npgsql.NodaTime" Version="9.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NutriTrack.Domains\NutriTrack_Domains.csproj" />
+  </ItemGroup>
+
 </Project>
