@@ -35,7 +35,7 @@ namespace NutriTrack_Api.Controllers
             try
             {
                 var token = await _registerAndLoginServ.LoginUser(info);
-                return Ok(token);
+                return Ok(new { Token = token });
             }
             catch (Exception E)
             {

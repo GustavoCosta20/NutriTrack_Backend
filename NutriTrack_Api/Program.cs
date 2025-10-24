@@ -5,8 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NutriTrack_Connection;
 using NutriTrack_Connection.Repositories;
+using NutriTrack_Domains.Interfaces.NutritionCalculator;
 using NutriTrack_Domains.Interfaces.Repository;
 using NutriTrack_Domains.Interfaces.UserInterfaces;
+using NutriTrack_Services.CalculatorService;
 using NutriTrack_Services.UserServices;
 using System.Text; 
 
@@ -15,7 +17,9 @@ var configuration = builder.Configuration;
 
 // 1. Configuração do DbContext com a Connection String
 builder.Services.AddDbContext<Context>(options =>
-    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))); 
+    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<INutritionCalculatorService, NutritionCalculatorService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IRegisterAndLoginServ, RegisterAndLoginServ>();
