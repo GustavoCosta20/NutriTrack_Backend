@@ -5,10 +5,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NutriTrack_Connection;
 using NutriTrack_Connection.Repositories;
+using NutriTrack_Domains.Interfaces.AiConnection;
 using NutriTrack_Domains.Interfaces.NutritionCalculator;
 using NutriTrack_Domains.Interfaces.Repository;
 using NutriTrack_Domains.Interfaces.UserInterfaces;
 using NutriTrack_Services.CalculatorService;
+using NutriTrack_Services.IaConexionService;
 using NutriTrack_Services.UserServices;
 using System.Text; 
 
@@ -19,10 +21,13 @@ var configuration = builder.Configuration;
 builder.Services.AddDbContext<Context>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<INutritionCalculatorService, NutritionCalculatorService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IRegisterAndLoginServ, RegisterAndLoginServ>();
+builder.Services.AddScoped<IAiConnectionService, AiConnectionService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddOptions();

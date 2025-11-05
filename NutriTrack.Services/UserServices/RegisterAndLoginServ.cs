@@ -72,7 +72,6 @@ namespace NutriTrack_Services.UserServices
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            // Pega a chave secreta do appsettings.json
             var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:SecretKey"]);
 
             var claims = new List<Claim>
@@ -93,6 +92,51 @@ namespace NutriTrack_Services.UserServices
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public async Task<ProfileDataDto> GetUserProfileAsync(Guid userId)
+        {
+            var user = await _usersRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("Usuário não encontrado.");
+            }
+
+            var profileData = new ProfileDataDto
+            {
+                NomeCompleto = user.NomeCompleto,
+                Email = user.Email,
+                DataNascimento = user.DataNascimento,
+                AlturaEmCm = user.AlturaEmCm,
+                PesoEmKg = user.PesoEmKg,
+                Genero = user.Genero,
+                NivelDeAtividade = user.NivelDeAtividade,
+                Objetivo = user.Objetivo
+            };
+
+            return profileData;
+        }
+
+        public async Task UpdateUserProfileAsync(UpdateProfileDto dto)
+        {
+            var user = await _usersRepository.GetByIdAsync(dto.UserId);
+            if (user == null)
+            {
+                throw new Exception("Usuário não encontrado.");
+            }
+
+            user.NomeCompleto = dto.NomeCompleto;
+            user.DataNascimento = dto.DataNascimento;
+            user.AlturaEmCm = dto.AlturaEmCm;
+            user.PesoEmKg = dto.PesoEmKg;
+            user.Genero = dto.Genero;
+            user.NivelDeAtividade = dto.NivelDeAtividade;
+            user.Objetivo = dto.Objetivo;
+            user.AtualizadoEm = DateTime.UtcNow;
+
+            _nutritionCalculator.CalcularPlanoNutricional(user);
+
+            await _usersRepository.UpdateAsync(user);
         }
     }
 }

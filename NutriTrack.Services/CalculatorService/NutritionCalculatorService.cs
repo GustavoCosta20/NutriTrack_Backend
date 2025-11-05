@@ -11,7 +11,7 @@ namespace NutriTrack_Services.CalculatorService
         {
             int idade = CalcularIdade(usuario.DataNascimento);
 
-            // TMB - Equação de Mifflin-St Jeor
+            // TMB
             double tmb;
             if (usuario.Genero == EnumGenero.Masculino)
             {
@@ -22,25 +22,23 @@ namespace NutriTrack_Services.CalculatorService
                 tmb = (10 * usuario.PesoEmKg) + (6.25 * usuario.AlturaEmCm) - (5 * idade) - 161;
             }
 
-            // Calcula Gasto Energético Total Diário (TDEE)
+            // Gasto Total Diário
             double fatorAtividade = GetFatorAtividade(usuario.NivelDeAtividade);
             double tdee = tmb * fatorAtividade;
 
-            // Ajusta calorias com base no objetivo (agora com arredondamento)
+            // calorias com base no objetivo
             int metaCalorias = AjustarCaloriasPorObjetivo(tdee, usuario.Objetivo);
 
-            // Calcula Macronutrientes (agora com arredondamento)
+            // Calcula Macros
             int metaProteinas = (int)Math.Round(usuario.PesoEmKg * 2);
             double caloriasProteina = metaProteinas * 4;
 
             double caloriasGordura = metaCalorias * 0.25;
             int metaGorduras = (int)Math.Round(caloriasGordura / 9);
 
-            // CORREÇÃO DE LÓGICA: Usamos o valor já arredondado das gorduras para maior precisão
             double caloriasCarboidratos = metaCalorias - caloriasProteina - (metaGorduras * 9);
             int metaCarboidratos = (int)Math.Round(caloriasCarboidratos / 4);
 
-            // Atribui os valores calculados ao objeto do usuário
             usuario.MetaCalorias = metaCalorias;
             usuario.MetaProteinas = metaProteinas;
             usuario.MetaCarboidratos = metaCarboidratos;
@@ -79,7 +77,7 @@ namespace NutriTrack_Services.CalculatorService
                 EnumObjetivo.TrocarGordura => tdee,
                 _ => tdee
             };
-            // CORREÇÃO: Usa Math.Round para arredondar para o inteiro mais próximo
+
             return (int)Math.Round(caloriasAjustadas);
         }
 

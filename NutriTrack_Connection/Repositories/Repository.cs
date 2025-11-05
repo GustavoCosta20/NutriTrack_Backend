@@ -20,7 +20,6 @@ namespace NutriTrack_Connection.Repositories
             return await _entities.FindAsync(id);
         }
 
-        // --- CREATE ---
         public async Task AddAsync(TEntity entity)
         {
             await _entities.AddAsync(entity);
@@ -38,11 +37,9 @@ namespace NutriTrack_Connection.Repositories
             return await _entities.ToListAsync();
         }
 
-        // --- UPDATE ---
         public void Update(TEntity entity)
         {
             _entities.Attach(entity);
-            // Muda estado entidade para Modificado
             _context.Entry(entity).State = EntityState.Modified;
             _context.SaveChanges();
         }
@@ -50,12 +47,10 @@ namespace NutriTrack_Connection.Repositories
         public async Task UpdateAsync(TEntity entity)
         {
             _entities.Attach(entity);
-            // Muda estado entidade para Modificado
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
-        // --- DELETE ---
         public void Delete(TEntity entity)
         {
             _entities.Remove(entity);
