@@ -19,5 +19,6 @@ namespace NutriTrack_Domains.Interfaces.Repository
         TEntity? FirstOrDefault(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity?> FirstOrDefaultAsync();
         TEntity? FirstOrDefault();
+        Task UpdateAsync(TEntity entity);
     }
 }
