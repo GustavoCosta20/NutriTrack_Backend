@@ -93,6 +93,27 @@ namespace NutriTrack_Api.Controllers
                 return StatusCode(500, new { Erro = "Ocorreu um erro ao buscar os dados do perfil." });
             }
         }
+
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IActionResult> UpdateCurrentUserProfile(UpdateProfileDto info)
+        {
+            try
+            {
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+                {
+                    return Unauthorized("Token inválido ou ID do usuário não encontrado.");
+                }
+                info.UserId = userId;
+                await _registerAndLoginServ.UpdateUserProfileAsync(info);
+                return Ok();
+            }
+            catch (Exception E)
+            {
+                throw new Exception(E.Message);
+            }
+        }
     }
 }
 
