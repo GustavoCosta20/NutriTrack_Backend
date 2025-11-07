@@ -73,6 +73,12 @@ namespace NutriTrack_Api.Controllers
                 var userProfile = new UserProfileDto
                 {
                     NomeCompleto = usuario.NomeCompleto,
+                    Email = usuario.Email,
+                    DataNascimento = usuario.DataNascimento,
+                    AlturaEmCm = usuario.AlturaEmCm,
+                    PesoEmKg = usuario.PesoEmKg,
+                    Genero = usuario.Genero,
+                    NivelDeAtividade = usuario.NivelDeAtividade,
                     Objetivo = usuario.Objetivo.ToString(),
                     MetaCalorias = usuario.MetaCalorias,
                     MetaProteinas = usuario.MetaProteinas,

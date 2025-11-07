@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NutriTrack_Domains.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,11 @@ namespace NutriTrack_Domains.Dtos
         public int MetaProteinas { get; set; }
         public int MetaCarboidratos { get; set; }
         public int MetaGorduras { get; set; }
-
+        public string Email { get; set; }
+        public DateOnly DataNascimento { get; set; }
+        public double AlturaEmCm { get; set; }
+        public double PesoEmKg { get; set; }
+        public EnumGenero Genero { get; set; }
+        public EnumNivelDeAtividade NivelDeAtividade { get; set; }
     }
 }
