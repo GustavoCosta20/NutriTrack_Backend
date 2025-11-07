@@ -38,7 +38,7 @@ namespace NutriTrack_Services.UserServices
                     Email = info.Email,
                     Genero = info.Genero,
                     Id = Guid.NewGuid(),
-                    NivelDeAtividade = info.NivelAtividade,
+                    NivelDeAtividade = info.NivelDeAtividade,
                     Objetivo = info.Objetivo,
                     PesoEmKg = info.PesoEmKg,
                     Senha = BCrypt.Net.BCrypt.HashPassword(info.Senha)

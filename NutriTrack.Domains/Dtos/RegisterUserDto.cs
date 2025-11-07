@@ -11,7 +11,7 @@ namespace NutriTrack_Domains.Dtos
         public double AlturaEmCm { get; set; }
         public double PesoEmKg { get; set; }
         public EnumGenero Genero { get; set; }
-        public EnumNivelDeAtividade NivelAtividade { get; set; }
+        public EnumNivelDeAtividade NivelDeAtividade { get; set; }
         public EnumObjetivo Objetivo { get; set; }
     }
 }
