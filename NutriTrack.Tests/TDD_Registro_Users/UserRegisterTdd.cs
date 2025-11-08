@@ -30,7 +30,7 @@ namespace NutriTrack_Tests.TDD
                 Senha = "senha123",
                 AlturaEmCm = 180,
                 PesoEmKg = 72,
-                NivelAtividade = EnumNivelDeAtividade.AtividadeModerada,
+                NivelDeAtividade = EnumNivelDeAtividade.AtividadeModerada,
                 Objetivo = EnumObjetivo.GanharMassa,
             };
 
