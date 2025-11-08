@@ -37,6 +37,11 @@ namespace NutriTrack_Connection.Repositories
             return await _entities.ToListAsync();
         }
 
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _context.Set<TEntity>().Where(predicate).ToListAsync();
+        }
+
         public void Update(TEntity entity)
         {
             _entities.Attach(entity);

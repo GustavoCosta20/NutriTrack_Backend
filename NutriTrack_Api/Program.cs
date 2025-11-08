@@ -12,7 +12,9 @@ using NutriTrack_Domains.Interfaces.UserInterfaces;
 using NutriTrack_Services.CalculatorService;
 using NutriTrack_Services.IaConexionService;
 using NutriTrack_Services.UserServices;
-using System.Text; 
+using System.Text;
+using NutriTrack_Domains.Interfaces.SnackService;
+using NutriTrack_Services.SnackService;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration; 
@@ -28,6 +30,7 @@ builder.Services.AddScoped<INutritionCalculatorService, NutritionCalculatorServi
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IRegisterAndLoginServ, RegisterAndLoginServ>();
 builder.Services.AddScoped<IAiConnectionService, AiConnectionService>();
+builder.Services.AddScoped<IRefeicaoService, RefeicaoService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddOptions();

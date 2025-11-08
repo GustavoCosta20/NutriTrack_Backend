@@ -23,8 +23,8 @@ namespace NutriTrack_Api.Controllers
         {
             try
             {
-                string retornoIa = await _aiConnectionService.GeminiConnection(pergunta);
-                return Ok(retornoIa.Replace("##","\n\n##"));
+                //string retornoIa = await _aiConnectionService.GeminiConnection(pergunta);
+                return Ok(/*retornoIa.Replace("##","\n\n##")*/);
             }
             catch (Exception e)
             {

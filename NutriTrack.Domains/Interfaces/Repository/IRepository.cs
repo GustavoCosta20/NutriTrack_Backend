@@ -12,6 +12,7 @@ namespace NutriTrack_Domains.Interfaces.Repository
         Task<TEntity?> GetByIdAsync(Guid id);
         Task AddAsync(TEntity entity);
         Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
         void Update(TEntity entity);
         void Delete(TEntity entity);
         IQueryable<TEntity> GetAll();
