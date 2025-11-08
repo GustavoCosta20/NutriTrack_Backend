@@ -2,7 +2,6 @@
 {
     public interface IAiConnectionService
     {
-        //Task<string> GeminiConnection(string pergunta);
         Task<string> AnalisarRefeicao(string prompt);
 
     }
