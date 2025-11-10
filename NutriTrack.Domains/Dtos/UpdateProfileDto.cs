@@ -2,11 +2,10 @@
 
 namespace NutriTrack_Domains.Dtos
 {
-    public class RegisterUserDto
+    public class UpdateProfileDto
     {
+        public Guid UserId { get; set; }
         public string NomeCompleto { get; set; }
-        public string Email { get; set; }
-        public string Senha { get; set; }
         public DateOnly DataNascimento { get; set; }
         public double AlturaEmCm { get; set; }
         public double PesoEmKg { get; set; }
