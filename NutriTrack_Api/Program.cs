@@ -55,11 +55,11 @@ builder.Services.AddAuthentication(options =>
     };
 }); 
 
-// 4. Configuração do Swagger para usar o Token JWT
+//Configuração do Swagger para usar o Token JWT
 builder.Services.AddSwaggerGen(swagger =>
 {
     swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "NutriTrack.Api", Version = "v1" });
-    // Adiciona o botão "Authorize" na UI do Swagger
+
     swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -89,9 +89,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "_myAllowSpecificOrigins",
                       builder =>
                       {
-                          builder.AllowAnyOrigin()
+                          builder.WithOrigins("http://localhost:4200",
+                                              "https://nutritrack-lifestyle.vercel.app")
                                  .AllowAnyHeader()
-                                 .AllowAnyMethod();
+                                 .AllowAnyMethod()
+                                 .AllowCredentials();
                       });
 });
 
