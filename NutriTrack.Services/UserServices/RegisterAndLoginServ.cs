@@ -33,7 +33,7 @@ namespace NutriTrack_Services.UserServices
                 {
                     NomeCompleto = info.NomeCompleto,
                     AlturaEmCm = info.AlturaEmCm,
-                    CriadoEm = DateTime.UtcNow,
+                    CriadoEm = DateTime.UtcNow.AddHours(-3),
                     DataNascimento = info.DataNascimento,
                     Email = info.Email,
                     Genero = info.Genero,
@@ -132,7 +132,7 @@ namespace NutriTrack_Services.UserServices
             user.Genero = dto.Genero;
             user.NivelDeAtividade = dto.NivelDeAtividade;
             user.Objetivo = dto.Objetivo;
-            user.AtualizadoEm = DateTime.UtcNow;
+            user.AtualizadoEm = DateTime.UtcNow.AddHours(-3);
 
             _nutritionCalculator.CalcularPlanoNutricional(user);
 

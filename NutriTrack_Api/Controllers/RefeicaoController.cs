@@ -77,8 +77,11 @@ namespace NutriTrack_Api.Controllers
         {
             try
             {
+                var timeZoneBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                var dataHoraBrasilia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneBrasilia);
+
                 var usuarioId = ObterUsuarioIdDoToken();
-                var hoje = DateOnly.FromDateTime(DateTime.UtcNow);
+                var hoje = DateOnly.FromDateTime(dataHoraBrasilia);
                 var refeicoes = await _refeicaoService.ObterRefeicoesDoUsuario(usuarioId, hoje);
 
                 var totais = new TotaisDiarios
