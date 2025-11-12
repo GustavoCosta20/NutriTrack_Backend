@@ -170,5 +170,33 @@ namespace NutriTrack_Api.Controllers
                 });
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> ExcluirRefeicao(Guid id)
+        {
+            try
+            {
+                var usuarioId = ObterUsuarioIdDoToken();
+                var sucesso = await _refeicaoService.ExcluirRefeicao(id, usuarioId);
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Refeição excluída com sucesso!"
+                });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    sucesso = false,
+                    mensagem = ex.Message
+                });
+            }
+        }
     }
 }

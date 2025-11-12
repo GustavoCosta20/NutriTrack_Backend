@@ -393,6 +393,38 @@ namespace NutriTrack_Services.SnackService
             }
         }
 
+        public async Task<bool> ExcluirRefeicao(Guid refeicaoId, Guid usuarioId)
+        {
+            try
+            {
+                var refeicao = await _refeicaoRepository.GetByIdAsync(refeicaoId);
+
+                if (refeicao == null)
+                {
+                    throw new Exception("Refeição não encontrada");
+                }
+
+                if (refeicao.UsuarioId != usuarioId)
+                {
+                    throw new UnauthorizedAccessException("Você não tem permissão para excluir esta refeição");
+                }
+
+                var alimentos = await _alimentosConsumidoRepository.GetAllAsync(a => a.RefeicaoId == refeicaoId);
+                foreach (var alimento in alimentos)
+                {
+                    await _alimentosConsumidoRepository.DeleteAsync(alimento);
+                }
+
+                await _refeicaoRepository.DeleteAsync(refeicao);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao excluir refeição: {ex.Message}");
+            }
+        }
+
         private class GeminiParseResponse
         {
             public List<AlimentoJson> Alimentos { get; set; }
