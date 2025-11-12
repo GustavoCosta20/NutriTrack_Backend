@@ -131,5 +131,44 @@ namespace NutriTrack_Api.Controllers
 
             return usuarioId;
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> AtualizarRefeicao(Guid id, [FromBody] CriarRefeicaoRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.DescricaoRefeicao))
+                {
+                    return BadRequest(new
+                    {
+                        sucesso = false,
+                        mensagem = "A descrição da refeição é obrigatória."
+                    });
+                }
+
+                var usuarioId = ObterUsuarioIdDoToken();
+
+                var refeicao = await _refeicaoService.AtualizarRefeicao(id, usuarioId, request.DescricaoRefeicao, request.NomeRefeicao ?? "");
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Refeição atualizada com sucesso!",
+                    refeicao
+                });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    sucesso = false,
+                    mensagem = ex.Message
+                });
+            }
+        }
     }
 }

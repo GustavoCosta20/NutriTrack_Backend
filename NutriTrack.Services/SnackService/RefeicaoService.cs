@@ -29,28 +29,19 @@ namespace NutriTrack_Services.SnackService
             var dataHoraBrasilia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneBrasilia);
             try
             {
-                // Extrai o tipo de refeição da descrição (se houver)
                 var (tipoRefeicao, descricaoLimpa) = ExtrairTipoRefeicao(descricaoRefeicao);
-
-                // Se o tipo foi identificado na descrição, usa ele; senão usa o nomeRefeicao
                 var nomeRefeicaoFinal = !string.IsNullOrEmpty(tipoRefeicao)
                     ? tipoRefeicao
                     : (string.IsNullOrEmpty(nomeRefeicao) ? "Refeição" : nomeRefeicao);
 
-                // Monta o prompt com a descrição limpa
                 var prompt = MontarPromptAnaliseNutricional(descricaoLimpa, nomeRefeicaoFinal);
-
-                // Chama a IA
                 var respostaIA = await _geminiService.AnalisarRefeicao(prompt);
-
-                // Verifica se há erro de validação
                 var erroValidacao = VerificarErroValidacao(respostaIA);
                 if (erroValidacao != null)
                 {
                     throw new ArgumentException(erroValidacao);
                 }
 
-                // Parseia a resposta
                 var alimentosAnalisados = ParsearRespostaGemini(respostaIA);
 
                 if (alimentosAnalisados == null || !alimentosAnalisados.Any())
@@ -58,7 +49,6 @@ namespace NutriTrack_Services.SnackService
                     throw new Exception("Não foi possível analisar os alimentos da refeição.");
                 }
 
-                // Cria a refeição com o nome correto
                 var refeicao = new Refeicao
                 {
                     Id = Guid.NewGuid(),
@@ -69,7 +59,6 @@ namespace NutriTrack_Services.SnackService
 
                 await _refeicaoRepository.AddAsync(refeicao);
 
-                // Adiciona os alimentos consumidos
                 foreach (var alimento in alimentosAnalisados)
                 {
                     var alimentoConsumido = new AlimentosConsumido
@@ -119,21 +108,16 @@ namespace NutriTrack_Services.SnackService
 
             foreach (var tipo in tiposRefeicao)
             {
-                // Verifica se começa com o tipo de refeição seguido de vírgula, dois pontos ou espaço
                 if (descricaoLower.StartsWith(tipo + ",") ||
                     descricaoLower.StartsWith(tipo + ":") ||
                     descricaoLower.StartsWith(tipo + " "))
                 {
-                    // Remove o tipo da descrição e retorna
                     var descricaoSemTipo = descricao.Substring(tipo.Length).TrimStart(',', ':', ' ');
-
-                    // Normaliza o nome da refeição (capitaliza primeira letra)
                     var tipoNormalizado = CapitalizarPrimeiraLetra(tipo);
 
                     return (tipoNormalizado, descricaoSemTipo);
                 }
 
-                // Verifica se a descrição é APENAS o tipo (ex: "almoço")
                 if (descricaoLower == tipo)
                 {
                     return (CapitalizarPrimeiraLetra(tipo), string.Empty);
@@ -151,7 +135,6 @@ namespace NutriTrack_Services.SnackService
             return char.ToUpper(texto[0]) + texto.Substring(1).ToLower();
         }
 
-        // Método auxiliar para verificar erros de validação
         private string VerificarErroValidacao(string respostaIA)
         {
             try
@@ -326,6 +309,88 @@ namespace NutriTrack_Services.SnackService
                 TotalCarboidratos = alimentosDto.Sum(a => a.Carboidratos),
                 TotalGorduras = alimentosDto.Sum(a => a.Gorduras)
             };
+        }
+
+        public async Task<RefeicaoDto> AtualizarRefeicao(Guid refeicaoId, Guid usuarioId, string descricaoRefeicao, string nomeRefeicao)
+        {
+            try
+            {
+                var refeicaoExistente = await _refeicaoRepository.GetByIdAsync(refeicaoId);
+
+                if (refeicaoExistente == null)
+                {
+                    throw new Exception("Refeição não encontrada");
+                }
+
+                if (refeicaoExistente.UsuarioId != usuarioId)
+                {
+                    throw new UnauthorizedAccessException("Você não tem permissão para editar esta refeição");
+                }
+
+                var alimentosAntigos = await _alimentosConsumidoRepository.GetAllAsync(a => a.RefeicaoId == refeicaoId);
+                foreach (var alimento in alimentosAntigos)
+                {
+                    await _alimentosConsumidoRepository.DeleteAsync(alimento);
+                }
+
+                var (tipoRefeicao, descricaoLimpa) = ExtrairTipoRefeicao(descricaoRefeicao);
+
+                var nomeRefeicaoFinal = !string.IsNullOrEmpty(tipoRefeicao)
+                    ? tipoRefeicao
+                    : (string.IsNullOrEmpty(nomeRefeicao) ? refeicaoExistente.NomeRef : nomeRefeicao);
+
+                var prompt = MontarPromptAnaliseNutricional(descricaoLimpa, nomeRefeicaoFinal);
+                var respostaIA = await _geminiService.AnalisarRefeicao(prompt);
+
+                var erroValidacao = VerificarErroValidacao(respostaIA);
+                if (erroValidacao != null)
+                {
+                    throw new ArgumentException(erroValidacao);
+                }
+
+                var alimentosAnalisados = ParsearRespostaGemini(respostaIA);
+
+                if (alimentosAnalisados == null || !alimentosAnalisados.Any())
+                {
+                    throw new Exception("Não foi possível analisar os alimentos da refeição.");
+                }
+
+                refeicaoExistente.NomeRef = nomeRefeicaoFinal;
+                await _refeicaoRepository.UpdateAsync(refeicaoExistente);
+
+                foreach (var alimento in alimentosAnalisados)
+                {
+                    var alimentoConsumido = new AlimentosConsumido
+                    {
+                        Id = Guid.NewGuid(),
+                        RefeicaoId = refeicaoExistente.Id,
+                        Descricao = alimento.Descricao,
+                        Quantidade = alimento.Quantidade,
+                        Unidade = alimento.Unidade,
+                        Calorias = alimento.Calorias,
+                        Proteinas = alimento.Proteinas,
+                        Carboidratos = alimento.Carboidratos,
+                        Gorduras = alimento.Gorduras
+                    };
+
+                    await _alimentosConsumidoRepository.AddAsync(alimentoConsumido);
+                }
+
+                var refeicaoAtualizada = await ObterRefeicaoPorId(refeicaoExistente.Id);
+                return refeicaoAtualizada;
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao atualizar refeição: {ex.Message}");
+            }
         }
 
         private class GeminiParseResponse
