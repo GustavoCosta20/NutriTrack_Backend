@@ -47,7 +47,9 @@ namespace NutriTrack_Services.CalculatorService
 
         private int CalcularIdade(DateOnly dataNascimento)
         {
-            var hoje = DateOnly.FromDateTime(DateTime.UtcNow);
+            var timeZoneBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            var dataHoraBrasilia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneBrasilia);
+            var hoje = DateOnly.FromDateTime(dataHoraBrasilia);
             int idade = hoje.Year - dataNascimento.Year;
             if (hoje.DayOfYear < dataNascimento.DayOfYear)
             {

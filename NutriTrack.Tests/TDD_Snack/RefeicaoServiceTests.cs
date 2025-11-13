@@ -26,6 +26,9 @@ namespace NutriTrack_Tests.Services.SnackService
         public async Task ProcessarECriarRefeicao_DeveCriarRefeicaoERetornarDto()
         {
             // Arrange
+            var timeZoneBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            var dataHoraBrasilia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneBrasilia);
+
             var usuarioId = Guid.NewGuid();
             var descricao = "2 ovos e 1 fatia de pão";
             var nomeRefeicao = "Café da manhã";
@@ -37,7 +40,7 @@ namespace NutriTrack_Tests.Services.SnackService
             _alimentosRepoMock.Setup(x => x.AddAsync(It.IsAny<AlimentosConsumido>())).Returns(Task.CompletedTask);
 
             var refeicaoId = Guid.NewGuid();
-            var refeicao = new Refeicao { Id = refeicaoId, UsuarioId = usuarioId, NomeRef = nomeRefeicao, Data = DateOnly.FromDateTime(DateTime.UtcNow) };
+            var refeicao = new Refeicao { Id = refeicaoId, UsuarioId = usuarioId, NomeRef = nomeRefeicao, Data = DateOnly.FromDateTime(dataHoraBrasilia) };
       _alimentosRepoMock.Setup(x => x.GetAllAsync(It.IsAny<Expression<Func<AlimentosConsumido, bool>>>()))
                 .ReturnsAsync(new List<AlimentosConsumido>
                 {
@@ -69,8 +72,11 @@ namespace NutriTrack_Tests.Services.SnackService
         public async Task ObterRefeicoesDoUsuario_DeveRetornarListaDeRefeicoes()
         {
             // Arrange
+            var timeZoneBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            var dataHoraBrasilia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneBrasilia);
+
             var usuarioId = Guid.NewGuid();
-            var refeicao = new Refeicao { Id = Guid.NewGuid(), UsuarioId = usuarioId, NomeRef = "Almoço", Data = DateOnly.FromDateTime(DateTime.UtcNow) };
+            var refeicao = new Refeicao { Id = Guid.NewGuid(), UsuarioId = usuarioId, NomeRef = "Almoço", Data = DateOnly.FromDateTime(dataHoraBrasilia) };
             _refeicaoRepoMock.Setup(x => x.GetAllAsync(It.IsAny<Expression<Func<Refeicao, bool>>>()))
                 .ReturnsAsync(new List<Refeicao> { refeicao });
 
@@ -91,8 +97,11 @@ namespace NutriTrack_Tests.Services.SnackService
         public async Task ObterRefeicaoPorId_DeveRetornarRefeicaoDto()
         {
             // Arrange
+            var timeZoneBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            var dataHoraBrasilia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneBrasilia);
+
             var refeicaoId = Guid.NewGuid();
-            var refeicao = new Refeicao { Id = refeicaoId, UsuarioId = Guid.NewGuid(), NomeRef = "Jantar", Data = DateOnly.FromDateTime(DateTime.UtcNow) };
+            var refeicao = new Refeicao { Id = refeicaoId, UsuarioId = Guid.NewGuid(), NomeRef = "Jantar", Data = DateOnly.FromDateTime(dataHoraBrasilia) };
             _refeicaoRepoMock.Setup(x => x.GetByIdAsync(refeicaoId)).ReturnsAsync(refeicao);
 
             _alimentosRepoMock.Setup(x => x.GetAllAsync(It.IsAny<Expression<Func<AlimentosConsumido, bool>>>()))

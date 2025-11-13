@@ -77,8 +77,11 @@ namespace NutriTrack_Api.Controllers
         {
             try
             {
+                var timeZoneBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+                var dataHoraBrasilia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneBrasilia);
+
                 var usuarioId = ObterUsuarioIdDoToken();
-                var hoje = DateOnly.FromDateTime(DateTime.UtcNow);
+                var hoje = DateOnly.FromDateTime(dataHoraBrasilia);
                 var refeicoes = await _refeicaoService.ObterRefeicoesDoUsuario(usuarioId, hoje);
 
                 var totais = new TotaisDiarios
@@ -127,6 +130,73 @@ namespace NutriTrack_Api.Controllers
             }
 
             return usuarioId;
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> AtualizarRefeicao(Guid id, [FromBody] CriarRefeicaoRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.DescricaoRefeicao))
+                {
+                    return BadRequest(new
+                    {
+                        sucesso = false,
+                        mensagem = "A descrição da refeição é obrigatória."
+                    });
+                }
+
+                var usuarioId = ObterUsuarioIdDoToken();
+
+                var refeicao = await _refeicaoService.AtualizarRefeicao(id, usuarioId, request.DescricaoRefeicao, request.NomeRefeicao ?? "");
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Refeição atualizada com sucesso!",
+                    refeicao
+                });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    sucesso = false,
+                    mensagem = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> ExcluirRefeicao(Guid id)
+        {
+            try
+            {
+                var usuarioId = ObterUsuarioIdDoToken();
+                var sucesso = await _refeicaoService.ExcluirRefeicao(id, usuarioId);
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Refeição excluída com sucesso!"
+                });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    sucesso = false,
+                    mensagem = ex.Message
+                });
+            }
         }
     }
 }
