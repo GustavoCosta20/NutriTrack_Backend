@@ -101,7 +101,9 @@ namespace NutriTrack_Services.SnackService
                 "almoço", "almoco", "lunch",
                 "jantar", "janta", "dinner",
                 "lanche da manhã", "lanche da tarde", "lanche",
-                "ceia", "snack"
+                "ceia", "snack",
+                "pré-treino", "pré", "pré working", "pré treino", "pré-working", "pre treino", "pre treino", "pre working",
+                "pós-treino", "pós", "pós working", "pós treino", "pós-working", "pos treino", "pos treino", "pos working",
             };
 
             var descricaoLower = descricao.ToLower().Trim();

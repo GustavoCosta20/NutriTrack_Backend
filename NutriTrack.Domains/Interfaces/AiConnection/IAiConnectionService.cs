@@ -3,6 +3,6 @@
     public interface IAiConnectionService
     {
         Task<string> AnalisarRefeicao(string prompt);
-
+        Task<string> ConversarSobreNutricao(string mensagemUsuario);
     }
 }
