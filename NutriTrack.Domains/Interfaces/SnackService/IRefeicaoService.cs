@@ -9,5 +9,6 @@ namespace NutriTrack_Domains.Interfaces.SnackService
         Task<RefeicaoDto> ObterRefeicaoPorId(Guid refeicaoId);
         Task<RefeicaoDto> AtualizarRefeicao(Guid refeicaoId, Guid usuarioId, string descricaoRefeicao, string nomeRefeicao);
         Task<bool> ExcluirRefeicao(Guid refeicaoId, Guid usuarioId);
+        Task<RefeicaoDto> AtualizarNomeRefeicao(Guid refeicaoId, Guid usuarioId, string novoNome);
     }
 }

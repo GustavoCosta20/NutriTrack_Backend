@@ -175,7 +175,7 @@ namespace NutriTrack_Services.SnackService
 
                 var refeicoesDto = new List<RefeicaoDto>();
 
-                foreach (var refeicao in refeicoes.OrderByDescending(r => r.Data))
+                foreach (var refeicao in refeicoes.OrderByDescending(r => r.Data).ThenBy(r => r.Id))
                 {
                     var dto = await MapearParaDto(refeicao);
                     refeicoesDto.Add(dto);
@@ -424,6 +424,38 @@ namespace NutriTrack_Services.SnackService
             catch (Exception ex)
             {
                 throw new Exception($"Erro ao excluir refeição: {ex.Message}");
+            }
+        }
+
+        public async Task<RefeicaoDto> AtualizarNomeRefeicao(Guid refeicaoId, Guid usuarioId, string novoNome)
+        {
+            try
+            {
+                var refeicaoExistente = await _refeicaoRepository.GetByIdAsync(refeicaoId);
+
+                if (refeicaoExistente == null)
+                {
+                    throw new Exception("Refeição não encontrada");
+                }
+
+                if (refeicaoExistente.UsuarioId != usuarioId)
+                {
+                    throw new UnauthorizedAccessException("Você não tem permissão para editar esta refeição");
+                }
+
+                refeicaoExistente.NomeRef = novoNome;
+                await _refeicaoRepository.UpdateAsync(refeicaoExistente);
+
+                var refeicaoAtualizada = await ObterRefeicaoPorId(refeicaoExistente.Id);
+                return refeicaoAtualizada;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao atualizar nome da refeição: {ex.Message}");
             }
         }
 

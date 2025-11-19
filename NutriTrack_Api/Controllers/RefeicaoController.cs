@@ -120,18 +120,6 @@ namespace NutriTrack_Api.Controllers
             }
         }
 
-        private Guid ObterUsuarioIdDoToken()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var usuarioId))
-            {
-                throw new UnauthorizedAccessException("Usuário não autenticado.");
-            }
-
-            return usuarioId;
-        }
-
         [HttpPut("{id}")]
         public async Task<IActionResult> AtualizarRefeicao(Guid id, [FromBody] CriarRefeicaoRequest request)
         {
@@ -148,7 +136,12 @@ namespace NutriTrack_Api.Controllers
 
                 var usuarioId = ObterUsuarioIdDoToken();
 
-                var refeicao = await _refeicaoService.AtualizarRefeicao(id, usuarioId, request.DescricaoRefeicao, request.NomeRefeicao ?? "");
+                var refeicao = await _refeicaoService.AtualizarRefeicao(
+                    id,
+                    usuarioId,
+                    request.DescricaoRefeicao,
+                    request.NomeRefeicao ?? ""
+                );
 
                 return Ok(new
                 {
@@ -157,7 +150,50 @@ namespace NutriTrack_Api.Controllers
                     refeicao
                 });
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    sucesso = false,
+                    mensagem = ex.Message
+                });
+            }
+        }
+
+        [HttpPatch("{id}/nome")]
+        public async Task<IActionResult> AtualizarNomeRefeicao(Guid id, [FromBody] AtualizarNomeRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.NomeRefeicao))
+                {
+                    return BadRequest(new
+                    {
+                        sucesso = false,
+                        mensagem = "O nome da refeição é obrigatório."
+                    });
+                }
+
+                var usuarioId = ObterUsuarioIdDoToken();
+
+                var refeicao = await _refeicaoService.AtualizarNomeRefeicao(
+                    id,
+                    usuarioId,
+                    request.NomeRefeicao
+                );
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Nome da refeição atualizado com sucesso!",
+                    refeicao
+                });
+            }
+            catch (UnauthorizedAccessException)
             {
                 return Forbid();
             }
@@ -197,6 +233,18 @@ namespace NutriTrack_Api.Controllers
                     mensagem = ex.Message
                 });
             }
+        }
+
+        private Guid ObterUsuarioIdDoToken()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var usuarioId))
+            {
+                throw new UnauthorizedAccessException("Usuário não autenticado.");
+            }
+
+            return usuarioId;
         }
     }
 }
