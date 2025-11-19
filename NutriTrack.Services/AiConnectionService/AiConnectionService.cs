@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using NutriTrack_Domains.Dtos;
 using NutriTrack_Domains.Interfaces.AiConnection;
+using NutriTrack_Domains.Tables.UsersTb;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -83,51 +85,66 @@ namespace NutriTrack_Services.IaConexionService
             }
         }
 
-        public async Task<string> ConversarSobreNutricao(string mensagemUsuario)
+        public async Task<string> ConversarSobreNutricao(string mensagemUsuario, Users perfil)
         {
             try
             {
-                var prompt = $@"Você é um assistente nutricional especializado. Sua função é ajudar usuários com dúvidas sobre alimentação saudável, dietas, horários de refeições, sugestões de cardápios e questões nutricionais em geral.
+                var prompt = $@"
+                                Você é um assistente nutricional especializado.
 
-                                REGRAS IMPORTANTES:
-                                1. Responda APENAS perguntas relacionadas a nutrição, alimentação, dietas, saúde alimentar e temas correlatos
-                                2. Se a pergunta NÃO for sobre nutrição/alimentação, responda educadamente: ""Desculpe, só posso ajudar com questões relacionadas a nutrição e alimentação. Como posso ajudá-lo com sua dieta?""
-                                3. Seja objetivo, claro e use linguagem acessível
-                                4. Forneça informações baseadas em evidências científicas
-                                5. Não substitua consultas médicas - sempre recomende profissionais quando necessário
-                                6. Não forneça dietas restritivas sem acompanhamento profissional
+                                Sua missão é ajudar o usuário com orientações sobre alimentação saudável, horários, substituições inteligentes de alimentos, montagem de cardápios e como atingir suas metas nutricionais diárias.
 
-                                MENSAGEM DO USUÁRIO: {mensagemUsuario}
+                                ===== PERFIL DO USUÁRIO =====
+                                Meta diária de calorias: {perfil.MetaCalorias} kcal
+                                Meta diária de proteínas: {perfil.MetaProteinas} g
+                                Meta diária de carboidratos: {perfil.MetaCarboidratos} g
+                                Meta diária de gorduras: {perfil.MetaGorduras} g
 
-                                Responda de forma amigável e útil:";
+                                ===== REGRAS IMPORTANTES =====
+                                1. Responda APENAS perguntas relacionadas a nutrição, hábitos alimentares ou dietas.
+                                2. Caso a pergunta não seja relacionada ao tema, responda apenas:
+                                   ""Desculpe, só posso ajudar com questões relacionadas a nutrição e alimentação. Como posso ajudá-lo com sua dieta?""
+                                3. Explique usando linguagem simples e objetiva.
+                                4. Baseie as recomendações em evidências científicas.
+                                5. Não forneça dietas extremamente restritivas.
+                                6. Sempre recomende acompanhamento profissional quando necessário.
+                                7. Leve sempre em consideração as metas nutricionais do usuário ao sugerir refeições, substituições e porções.
+                                8. Quando fizer sugestões, explique como elas contribuem para atingir as metas diárias.
+
+                                ===== MENSAGEM DO USUÁRIO =====
+                                {mensagemUsuario}
+
+                                Responda de forma clara, objetiva, amigável e personalizada com base nas metas do usuário.
+                                Forneça respostas curtas, diretas e com no máximo 5 parágrafos.
+                                ";
 
                 var requestBody = new
                 {
                     contents = new[]
                     {
-                        new
-                        {
-                            parts = new[]
-                            {
-                                new { text = prompt }
-                            }
-                        }
-                    },
+                new
+                {
+                    parts = new[]
+                    {
+                        new { text = prompt }
+                    }
+                }
+            },
                     generationConfig = new
                     {
                         temperature = 0.7,
                         topK = 40,
                         topP = 0.95,
-                        maxOutputTokens = 1024,
+                        maxOutputTokens = 8192,
                         candidateCount = 1
                     },
                     safetySettings = new[]
                     {
-                        new { category = "HARM_CATEGORY_HARASSMENT", threshold = "BLOCK_NONE" },
-                        new { category = "HARM_CATEGORY_HATE_SPEECH", threshold = "BLOCK_NONE" },
-                        new { category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold = "BLOCK_NONE" },
-                        new { category = "HARM_CATEGORY_DANGEROUS_CONTENT", threshold = "BLOCK_NONE" }
-                    }
+                new { category = "HARM_CATEGORY_HARASSMENT", threshold = "BLOCK_NONE" },
+                new { category = "HARM_CATEGORY_HATE_SPEECH", threshold = "BLOCK_NONE" },
+                new { category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold = "BLOCK_NONE" },
+                new { category = "HARM_CATEGORY_DANGEROUS_CONTENT", threshold = "BLOCK_NONE" }
+            }
                 };
 
                 var response = await _httpClient.PostAsJsonAsync(_apiUrl, requestBody);
@@ -138,7 +155,7 @@ namespace NutriTrack_Services.IaConexionService
                     throw new Exception($"Erro ao chamar API Gemini: {response.StatusCode} - {errorContent}");
                 }
 
-                var result = await response.Content.ReadFromJsonAsync<GeminiResponse>();
+                var result = await response.Content.ReadFromJsonAsync<GeminiResponseSugestion>();
                 var textoResposta = result?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text;
 
                 if (string.IsNullOrEmpty(textoResposta))
@@ -147,12 +164,14 @@ namespace NutriTrack_Services.IaConexionService
                 }
 
                 return textoResposta;
+                
             }
             catch (Exception ex)
             {
                 throw new Exception($"Erro ao conversar com IA: {ex.Message}");
             }
         }
+
 
         private class GeminiResponse
         {
@@ -172,6 +191,36 @@ namespace NutriTrack_Services.IaConexionService
         private class Part
         {
             public string Text { get; set; }
+        }
+
+        public class GeminiResponseSugestion
+        {
+            public List<CandidateSugestion> Candidates { get; set; }
+        }
+
+        public class CandidateSugestion
+        {
+            public ContentSugestion Content { get; set; }
+            public string FinishReason { get; set; }
+            public int Index { get; set; }
+            public List<SafetyRatingSugestion> SafetyRatings { get; set; }
+        }
+
+        public class ContentSugestion
+        {
+            public List<PartSugestion> Parts { get; set; }
+            public string Role { get; set; }
+        }
+
+        public class PartSugestion
+        {
+            public string Text { get; set; }
+        }
+
+        public class SafetyRatingSugestion
+        {
+            public string Category { get; set; }
+            public string Probability { get; set; }
         }
     }
 }

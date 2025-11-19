@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using NutriTrack_Domains.Dtos;
 using NutriTrack_Domains.Interfaces.AiConnection;
+using NutriTrack_Domains.Interfaces.Repository;
+using NutriTrack_Domains.Tables.UsersTb;
+using System.Security.Claims;
 
 namespace NutriTrack_Api.Controllers
 {
@@ -11,10 +14,12 @@ namespace NutriTrack_Api.Controllers
     public class ChatIaController : ControllerBase
     {
         private readonly IAiConnectionService _aiService;
+        private readonly IRepository<Users> _userRepository;
 
-        public ChatIaController(IAiConnectionService aiService)
+        public ChatIaController(IAiConnectionService aiService, IRepository<Users> userRepository)
         {
             _aiService = aiService;
+            _userRepository = userRepository;
         }
 
         [HttpPost("conversar")]
@@ -31,7 +36,16 @@ namespace NutriTrack_Api.Controllers
                     });
                 }
 
-                var resposta = await _aiService.ConversarSobreNutricao(request.Mensagem);
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+                {
+                    return Unauthorized("Token inválido ou ID do usuário não encontrado.");
+                }
+
+                var usuario = await _userRepository.GetByIdAsync(userId);
+
+
+                var resposta = await _aiService.ConversarSobreNutricao(request.Mensagem, usuario);
 
                 return Ok(new ChatIaResponse
                 {
