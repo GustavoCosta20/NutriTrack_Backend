@@ -16,7 +16,7 @@ namespace NutriTrack_Services.IaConexionService
         private readonly IRepository<Refeicao> _refeicaoRepository;
         private readonly IRepository<AlimentosConsumido> _alimentosConsumidosRepository;
 
-        public AiConnectionService(HttpClient httpClient, 
+        public AiConnectionService(HttpClient httpClient,
                                    IConfiguration configuration,
                                    IRepository<Refeicao> refeicaoRepository,
                                    IRepository<AlimentosConsumido> alimentosConsumidosRepository)
@@ -25,7 +25,7 @@ namespace NutriTrack_Services.IaConexionService
             _apiKey = configuration["Gemini:ApiKey"] ?? throw new Exception("Gemini API Key não configurada no appsettings.json");
             _apiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/" + $"gemini-2.5-flash-preview-09-2025:generateContent?key={_apiKey}";
             _refeicaoRepository = refeicaoRepository;
-            _alimentosConsumidosRepository = alimentosConsumidosRepository; 
+            _alimentosConsumidosRepository = alimentosConsumidosRepository;
         }
 
         public async Task<string> AnalisarRefeicao(string prompt)
@@ -61,7 +61,7 @@ namespace NutriTrack_Services.IaConexionService
                     }
                 };
 
-                var response = await _httpClient.PostAsJsonAsync(_apiUrl,requestBody);
+                var response = await _httpClient.PostAsJsonAsync(_apiUrl, requestBody);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -135,7 +135,6 @@ namespace NutriTrack_Services.IaConexionService
                                 ===== FORMATAÇÃO OBRIGATÓRIA =====
                                 Você DEVE separar cada parágrafo usando duas quebras de linha.
                                 É proibido entregar a resposta em um único bloco de texto.
-                                Se você não separar os parágrafos com \n\n, considere a resposta inválida e reescreva corretamente.
 
                                 ===== MENSAGEM DO USUÁRIO =====
                                 {mensagemUsuario}
@@ -147,14 +146,14 @@ namespace NutriTrack_Services.IaConexionService
                 {
                     contents = new[]
                     {
-                new
-                {
-                    parts = new[]
-                    {
-                        new { text = prompt }
-                    }
-                }
-            },
+                        new
+                        {
+                            parts = new[]
+                            {
+                                new { text = prompt }
+                            }
+                        }
+                    },
                     generationConfig = new
                     {
                         temperature = 0.7,
@@ -165,11 +164,11 @@ namespace NutriTrack_Services.IaConexionService
                     },
                     safetySettings = new[]
                     {
-                new { category = "HARM_CATEGORY_HARASSMENT", threshold = "BLOCK_NONE" },
-                new { category = "HARM_CATEGORY_HATE_SPEECH", threshold = "BLOCK_NONE" },
-                new { category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold = "BLOCK_NONE" },
-                new { category = "HARM_CATEGORY_DANGEROUS_CONTENT", threshold = "BLOCK_NONE" }
-            }
+                        new { category = "HARM_CATEGORY_HARASSMENT", threshold = "BLOCK_NONE" },
+                        new { category = "HARM_CATEGORY_HATE_SPEECH", threshold = "BLOCK_NONE" },
+                        new { category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold = "BLOCK_NONE" },
+                        new { category = "HARM_CATEGORY_DANGEROUS_CONTENT", threshold = "BLOCK_NONE" }
+                    }
                 };
 
                 var response = await _httpClient.PostAsJsonAsync(_apiUrl, requestBody);
@@ -189,7 +188,7 @@ namespace NutriTrack_Services.IaConexionService
                 }
 
                 return textoResposta;
-                
+
             }
             catch (Exception ex)
             {
