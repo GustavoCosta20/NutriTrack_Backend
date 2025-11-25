@@ -5,12 +5,16 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NutriTrack_Connection;
 using NutriTrack_Connection.Repositories;
+using NutriTrack_Domains.Interfaces.AiConnection;
 using NutriTrack_Domains.Interfaces.NutritionCalculator;
 using NutriTrack_Domains.Interfaces.Repository;
 using NutriTrack_Domains.Interfaces.UserInterfaces;
 using NutriTrack_Services.CalculatorService;
+using NutriTrack_Services.IaConexionService;
 using NutriTrack_Services.UserServices;
-using System.Text; 
+using System.Text;
+using NutriTrack_Domains.Interfaces.SnackService;
+using NutriTrack_Services.SnackService;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration; 
@@ -19,10 +23,14 @@ var configuration = builder.Configuration;
 builder.Services.AddDbContext<Context>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<INutritionCalculatorService, NutritionCalculatorService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IRegisterAndLoginServ, RegisterAndLoginServ>();
+builder.Services.AddScoped<IAiConnectionService, AiConnectionService>();
+builder.Services.AddScoped<IRefeicaoService, RefeicaoService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddOptions();
@@ -47,11 +55,11 @@ builder.Services.AddAuthentication(options =>
     };
 }); 
 
-// 4. Configuração do Swagger para usar o Token JWT
+//Configuração do Swagger para usar o Token JWT
 builder.Services.AddSwaggerGen(swagger =>
 {
     swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "NutriTrack.Api", Version = "v1" });
-    // Adiciona o botão "Authorize" na UI do Swagger
+
     swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -81,9 +89,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "_myAllowSpecificOrigins",
                       builder =>
                       {
-                          builder.AllowAnyOrigin()
+                          builder.WithOrigins("http://localhost:4200",
+                                              "https://nutritrack-lifestyle.vercel.app")
                                  .AllowAnyHeader()
-                                 .AllowAnyMethod();
+                                 .AllowAnyMethod()
+                                 .AllowCredentials();
                       });
 });
 
