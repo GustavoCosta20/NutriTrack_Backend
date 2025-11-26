@@ -50,7 +50,7 @@ namespace NutriTrack_Tests.TDD_IAConversation
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["Gemini:ApiKey"]).Returns("fake-api-key");
 
-            var service = new AiConnectionService(httpClient, configMock.Object);
+            var service = new AiConnectionService(httpClient, configMock.Object, null, null);
 
             // Act
             var resultado = await service.AnalisarRefeicao(prompt);
@@ -82,7 +82,7 @@ namespace NutriTrack_Tests.TDD_IAConversation
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["Gemini:ApiKey"]).Returns("fake-api-key");
 
-            var service = new AiConnectionService(httpClient, configMock.Object);
+            var service = new AiConnectionService(httpClient, configMock.Object, null, null);
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<Exception>(() => service.AnalisarRefeicao(prompt));
@@ -126,7 +126,7 @@ namespace NutriTrack_Tests.TDD_IAConversation
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["Gemini:ApiKey"]).Returns("fake-api-key");
 
-            var service = new AiConnectionService(httpClient, configMock.Object);
+            var service = new AiConnectionService(httpClient, configMock.Object, null, null);
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<Exception>(() => service.AnalisarRefeicao(prompt));
