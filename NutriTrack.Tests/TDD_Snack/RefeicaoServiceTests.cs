@@ -143,5 +143,139 @@ namespace NutriTrack_Tests.Services.SnackService
 
             Assert.Contains("Não foi possível analisar os alimentos", ex.Message);
         }
+
+        [Fact]
+        public async Task ProcessarECriarRefeicao_DeveLancarArgumentException_QuandoIA_RetornaErro()
+        {
+            // Arrange
+            var usuarioId = Guid.NewGuid();
+            var descricao = "teste";
+            var nome = "refeição";
+
+            var respostaErro = @"{
+                                    ""erro"": ""MENSAGEM_INVALIDA"",
+                                    ""mensagem"": ""Descrição inválida""
+                                }";
+
+            _aiServiceMock
+                .Setup(x => x.AnalisarRefeicao(It.IsAny<string>()))
+                .ReturnsAsync(respostaErro);
+
+            var service = CreateService();
+
+            // Act + Assert
+            var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
+                service.ProcessarECriarRefeicao(usuarioId, descricao, nome));
+
+            Assert.Equal("Descrição inválida", ex.Message);
+        }
+
+        [Fact]
+        public async Task ProcessarECriarRefeicao_DeveLancarExcecao_QuandoJsonInvalido()
+        {
+            // Arrange
+            var usuarioId = Guid.NewGuid();
+            var descricao = "teste";
+            var nome = "refeição";
+
+            _aiServiceMock
+                .Setup(x => x.AnalisarRefeicao(It.IsAny<string>()))
+                .ReturnsAsync("{{jsonquebrado");
+
+            var service = CreateService();
+
+            // Act + Assert
+            var ex = await Assert.ThrowsAsync<Exception>(() =>
+                service.ProcessarECriarRefeicao(usuarioId, descricao, nome));
+
+            Assert.Contains("Erro ao interpretar resposta da IA", ex.Message);
+        }
+
+        [Fact]
+        public async Task ObterRefeicaoPorId_DeveLancarExcecao_QuandoNaoEncontrada()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            _refeicaoRepoMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync((Refeicao)null);
+
+            var service = CreateService();
+
+            // Act + Assert
+            var ex = await Assert.ThrowsAsync<Exception>(() =>
+                service.ObterRefeicaoPorId(id));
+
+            Assert.Contains("Refeição não encontrada", ex.Message);
+        }
+
+        [Fact]
+        public async Task AtualizarRefeicao_DeveLancarUnauthorized_QuandoUsuarioNaoCorresponde()
+        {
+            // Arrange
+            var refeicao = new Refeicao
+            {
+                Id = Guid.NewGuid(),
+                UsuarioId = Guid.NewGuid(),
+                NomeRef = "Almoço"
+            };
+
+            _refeicaoRepoMock.Setup(r => r.GetByIdAsync(refeicao.Id)).ReturnsAsync(refeicao);
+
+            var service = CreateService();
+
+            // Act + Assert
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+                service.AtualizarRefeicao(refeicao.Id, Guid.NewGuid(), "arroz", "Almoço"));
+        }
+
+        [Fact]
+        public async Task AtualizarNomeRefeicao_DeveAtualizar()
+        {
+            // Arrange
+            var refeicao = new Refeicao
+            {
+                Id = Guid.NewGuid(),
+                UsuarioId = Guid.NewGuid(),
+                NomeRef = "Café"
+            };
+
+            _refeicaoRepoMock.Setup(r => r.GetByIdAsync(refeicao.Id)).ReturnsAsync(refeicao);
+            _refeicaoRepoMock.Setup(r => r.UpdateAsync(It.IsAny<Refeicao>())).Returns(Task.CompletedTask);
+
+            _alimentosRepoMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<AlimentosConsumido, bool>>>()))
+                .ReturnsAsync(new List<AlimentosConsumido>());
+
+            var service = CreateService();
+
+            // Act
+            var dto = await service.AtualizarNomeRefeicao(refeicao.Id, refeicao.UsuarioId, "Jantar");
+
+            // Assert
+            Assert.Equal("Jantar", dto.NomeRef);
+        }
+
+        [Fact]
+        public async Task ExcluirRefeicao_DeveExcluirComSucesso()
+        {
+            // Arrange
+            var refeicao = new Refeicao
+            {
+                Id = Guid.NewGuid(),
+                UsuarioId = Guid.NewGuid(),
+            };
+
+            _refeicaoRepoMock.Setup(r => r.GetByIdAsync(refeicao.Id)).ReturnsAsync(refeicao);
+            _refeicaoRepoMock.Setup(r => r.DeleteAsync(refeicao)).Returns(Task.CompletedTask);
+            _alimentosRepoMock.Setup(r => r.GetAllAsync(It.IsAny<Expression<Func<AlimentosConsumido, bool>>>()))
+                .ReturnsAsync(new List<AlimentosConsumido>());
+
+            var service = CreateService();
+
+            // Act
+            var result = await service.ExcluirRefeicao(refeicao.Id, refeicao.UsuarioId);
+
+            // Assert
+            Assert.True(result);
+        }
+
     }
 }

@@ -1,12 +1,7 @@
-﻿using NutriTrack_Domains.Dtos;
-using NutriTrack_Domains.Enums;
+﻿using NutriTrack_Domains.Enums;
 using NutriTrack_Domains.Tables.UsersTb;
 using NutriTrack_Services.CalculatorService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace NutriTrack_Tests.TDD_Calculation
 {

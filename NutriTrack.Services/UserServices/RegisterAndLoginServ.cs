@@ -29,6 +29,11 @@ namespace NutriTrack_Services.UserServices
         {
             try
             {
+                var existingUser = await _usersRepository.FirstOrDefaultAsync(u => u.Email == info.Email);
+
+                if (existingUser != null)
+                    throw new Exception("E-mail já cadastrado.");
+
                 var userData = new Users
                 {
                     NomeCompleto = info.NomeCompleto,
