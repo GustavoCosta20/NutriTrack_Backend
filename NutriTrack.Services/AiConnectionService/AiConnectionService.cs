@@ -42,7 +42,7 @@ namespace NutriTrack_Services.IaConexionService
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão com a API Gemini: {ex.Message}");
+                throw new Exception($"Erro de conexão com a API Gemini, verifique sua conta.");
             }
             catch (JsonException ex)
             {
