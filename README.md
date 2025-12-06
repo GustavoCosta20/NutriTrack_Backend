@@ -3,14 +3,10 @@
 # NutriTrack-Backend-TCC
 > Backend do Sistema de Acompanhamento Nutricional com IA – Desenvolvido por Gustavo Costa
 
-<br>
-
 ## 🔎 Visão Geral
 Este repositório contém o backend do **NutriTrack**, desenvolvido como Trabalho de Conclusão de Curso (TCC) para o curso de Engenharia de Software.
 
 O sistema inova ao utilizar **Inteligência Artificial (Google Gemini)** para processar e controlar a alimentação via linguagem natural, eliminando a fricção de cadastros manuais. O backend é responsável por toda a regra de negócio, incluindo o cálculo automático de taxas metabólicas necessárias para o alcanço do objetivo do usuário (Método Mifflin-St Jeor), intergração com inteligência artificial, segurança via JWT e persistência de dados.
-
-<br>
 
 ## 📦 Tecnologias utilizadas
 - Linguagem principal: **C# (.NET Core 9)**
@@ -20,7 +16,6 @@ O sistema inova ao utilizar **Inteligência Artificial (Google Gemini)** para pr
 - Testes Unitários: **xUnit + Moq**
 - Arquitetura: **MVC**
 
-<br>
 
 ## 🛠️ Como rodar localmente
 
@@ -51,7 +46,6 @@ update database
 # 7. Executar a aplicação
 dotnet run --project NutriTrack_Api
 ```
-<br>
 
 ## 🚀 Funcionalidades do projeto
 
@@ -64,6 +58,6 @@ dotnet run --project NutriTrack_Api
 
 <br>
 
-### 🔗 Repositório Frontend: [NutriTrack Frontend](https://github.com/GustavoCosta20/NutriTrack_Frontend)
-### 🔗 API em Produção: [Acessar Site](https://nutritrack-lifestyle.vercel.app/login)
+### 🔗 Frontend: [Acessar Repositório](https://github.com/GustavoCosta20/NutriTrack_Frontend)
+### 🔗 Aplicação: [Acessar Site](https://nutritrack-lifestyle.vercel.app/login)
 ### 🔗 Documentação RFC: [Acessar documento RFC](https://onedrive.live.com/?redeem=aHR0cHM6Ly8xZHJ2Lm1zL2IvYy82MTBlYjk3MTZkMjBiYWZjL0lRQlZTZ05aRXdPd1NaN0hBLUNqT1F6c0FYeHRXX3R5SWZscXNlU2VIdDYxVWNVP2U9VU5HSHMz&cid=610EB9716D20BAFC&id=610EB9716D20BAFC%21s59034a55031349b09ec703e0a3390cec&parId=610EB9716D20BAFC%21sea8cc6beffdb43d7976fbc7da445c639&o=OneUp)
