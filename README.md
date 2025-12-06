@@ -1,4 +1,4 @@
-<img width="1600" height="672" alt="Gemini_Generated_Image_hzuhr8hzuhr8hzuh" src="https://github.com/user-attachments/assets/96de14c3-85db-406d-8c67-c029ef3f9456"/>
+<img width="1600" height="500" alt="Gemini_Generated_Image_hzuhr8hzuhr8hzuh" src="https://github.com/user-attachments/assets/96de14c3-85db-406d-8c67-c029ef3f9456"/>
 
 # NutriTrack-Backend-TCC
 > Backend do Sistema de Acompanhamento Nutricional com IA – Desenvolvido por Gustavo Costa
@@ -51,6 +51,18 @@ update database
 # 7. Executar a aplicação
 dotnet run --project NutriTrack_Api
 ```
+<br>
+
+## 🚀 Funcionalidades do projeto
+
+- **Autenticação & Segurança**: Login e Registro com criptografia (BCrypt) e emissão de Token JWT;
+- **Integração com IA**: Serviço dedicado que envia descrições de refeições para o Google Gemini e retorna dados estruturados;
+- **Cálculo Metabólico**: Implementação da equação de Mifflin-St Jeor para definição automática de TMB e metas de macronutrientes baseadas no objetivo do usuário;
+- **Gestão de Refeições**: CRUD completo de refeições e alimentos consumidos;
+- **Dashboard Data**: Endpoint otimizado (`/user/me`) que fornece dados consolidados para gráficos de progresso;
+- **Testes Automatizados**: Cobertura de testes unitários (TDD) para serviços críticos de IA e Cálculos.
+
+<br>
 
 ### 🔗 Repositório Frontend: [NutriTrack Frontend](https://github.com/GustavoCosta20/NutriTrack_Frontend)
 ### 🔗 API em Produção: [Acessar Site](https://nutritrack-lifestyle.vercel.app/login)
