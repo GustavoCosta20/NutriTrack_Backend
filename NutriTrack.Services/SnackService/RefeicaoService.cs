@@ -86,7 +86,7 @@ namespace NutriTrack_Services.SnackService
             }
             catch (Exception ex)
             {
-                throw new Exception($"Erro ao processar refeição, verifique a conexão com IA.");
+                throw new Exception($"Limite de tokens ultrapassado ou falha na comunicação com o serviço de IA. Por favor, tente mais tarde!");
             }
         }
 
