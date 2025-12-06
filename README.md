@@ -1,4 +1,4 @@
-<img width="1600" height="500" alt="Gemini_Generated_Image_hzuhr8hzuhr8hzuh" src="https://github.com/user-attachments/assets/96de14c3-85db-406d-8c67-c029ef3f9456"/>
+<img width="1032" height="270" alt="rfc" src="https://github.com/user-attachments/assets/1551d655-0abc-4f59-bd22-d475787fdb3d" />
 
 # NutriTrack-Backend-TCC
 > Backend do Sistema de Acompanhamento Nutricional com IA – Desenvolvido por Gustavo Costa
