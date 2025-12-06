@@ -86,7 +86,7 @@ namespace NutriTrack_Services.SnackService
             }
             catch (Exception ex)
             {
-                throw new Exception($"Erro ao processar refeição: {ex.Message}");
+                throw new Exception($"Erro ao processar refeição, verifique a conexão com IA.");
             }
         }
 
